@@ -1,0 +1,39 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:icon="using:IconPacks.Avalonia.BoxIcons"
+             x:Class="PlumbobForge.Installer.App"
+             RequestedThemeVariant="Dark">
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://IconPacks.Avalonia.BoxIcons/BoxIcons.axaml" />
+
+        <!-- Custom Green CheckBox Styling -->
+        <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="#10b981"/>
+            <Setter Property="BorderBrush" Value="#10b981"/>
+        </Style>
+        <Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="#059669"/>
+            <Setter Property="BorderBrush" Value="#059669"/>
+        </Style>
+        <Style Selector="CheckBox:checked:pressed /template/ Border#NormalRectangle">
+            <Setter Property="Background" Value="#047857"/>
+            <Setter Property="BorderBrush" Value="#047857"/>
+        </Style>
+        <Style Selector="CheckBox:checked /template/ Path#CheckGlyph">
+            <Setter Property="Fill" Value="#ffffff"/>
+            <Setter Property="Stroke" Value="#ffffff"/>
+        </Style>
+    </Application.Styles>
+
+    <Application.Resources>
+        <Color x:Key="AccentColor">#10b981</Color>
+        <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+        <SolidColorBrush x:Key="BgDark" Color="#0f172a" />
+        <SolidColorBrush x:Key="BgCard" Color="#1e293b" />
+        <SolidColorBrush x:Key="BgSidebar" Color="#182234" />
+        <SolidColorBrush x:Key="TextMain" Color="#f8fafc" />
+        <SolidColorBrush x:Key="TextMuted" Color="#94a3b8" />
+    </Application.Resources>
+</Application>

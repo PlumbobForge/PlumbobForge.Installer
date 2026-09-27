@@ -1,0 +1,182 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:PlumbobForge.Installer.ViewModels"
+        xmlns:icon="using:IconPacks.Avalonia.BoxIcons"
+        x:Class="PlumbobForge.Installer.Views.MainWindow"
+        x:DataType="vm:InstallerViewModel"
+        Title="PlumbobForge Setup"
+        Icon="/Assets/appicon.ico"
+        Width="600" Height="440"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None"
+        Background="{StaticResource BgDark}">
+
+    <Window.Styles>
+        <Style Selector="Button.win-btn">
+            <Setter Property="Width" Value="44"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.win-btn:pointerover">
+            <Setter Property="Background" Value="#334155"/>
+        </Style>
+        <Style Selector="Button.win-btn:pointerover icon|PackIconBoxIcons">
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+        <Style Selector="Button.win-btn-close:pointerover">
+            <Setter Property="Background" Value="#ef4444"/>
+        </Style>
+        <Style Selector="Button.win-btn-close:pointerover icon|PackIconBoxIcons">
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+    </Window.Styles>
+
+    <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
+        <Grid RowDefinitions="Auto,*">
+            <!-- Frameless Titlebar -->
+            <Border Grid.Row="0" Height="40" Background="#182234" PointerPressed="OnHeaderPointerPressed">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="8">
+                        <Image Source="/Assets/appicon.png" Width="20" Height="20" RenderOptions.BitmapInterpolationMode="HighQuality"/>
+                        <TextBlock Text="PlumbobForge Setup" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextMain}" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Stretch">
+                        <Button Classes="win-btn" Click="OnMinimizeClick" ToolTip.Tip="Minimize">
+                            <icon:PackIconBoxIcons Kind="RegularMinus" Width="14" Height="14" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                        <Button Classes="win-btn win-btn-close" Click="OnCloseClick" ToolTip.Tip="Close">
+                            <icon:PackIconBoxIcons Kind="RegularX" Width="14" Height="14" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Wizard Step Content -->
+            <Grid Grid.Row="1" Margin="28,20,28,24">
+
+                <!-- STEP 1: WELCOME & OPTIONS -->
+                <Grid RowDefinitions="Auto,*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Welcome}}">
+                    <!-- Header Banner -->
+                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <Border Background="#2010b981" CornerRadius="8" Width="44" Height="44">
+                                <icon:PackIconBoxIcons Kind="RegularPackage" Width="24" Height="24" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{Binding TitleText}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
+                                <TextBlock Text="High-performance Sims 3 CC manager and cache builder." FontSize="12" Foreground="{StaticResource TextMuted}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Destination & Options Form -->
+                    <StackPanel Grid.Row="1" Spacing="14" VerticalAlignment="Center">
+                        <!-- Install Location Field -->
+                        <StackPanel Spacing="6">
+                            <TextBlock Text="Install Location" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextMain}"/>
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBox Grid.Column="0" Text="{Binding InstallDirectory}" Height="34" CornerRadius="6"
+                                         Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1"
+                                         Foreground="{StaticResource TextMain}" FontSize="12" VerticalContentAlignment="Center" Padding="10,0"/>
+                                <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseFolderCommand}" Margin="8,0,0,0"
+                                        Height="34" Padding="14,0" Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1"
+                                        Foreground="{StaticResource TextMain}" CornerRadius="6" FontSize="12" Cursor="Hand" VerticalContentAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+
+                        <!-- Checkbox Options -->
+                        <Border Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="14,10">
+                            <StackPanel Spacing="8">
+                                <CheckBox IsChecked="{Binding CreateDesktopShortcut}">
+                                    <TextBlock Text="Create Desktop Shortcut" FontSize="12" Foreground="{StaticResource TextMain}"/>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding CreateStartMenuShortcut}">
+                                    <TextBlock Text="Create Start Menu Shortcut" FontSize="12" Foreground="{StaticResource TextMain}"/>
+                                </CheckBox>
+                                <CheckBox IsChecked="{Binding CleanupLegacyElectron}" IsVisible="{Binding HasLegacyElectron}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="Remove leftover files from previous Electron version (saves ~250 MB)" FontSize="12" Foreground="{StaticResource TextMain}"/>
+                                        <Border Background="#3010b981" CornerRadius="4" Padding="6,1">
+                                            <TextBlock Text="Detected" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
+                                        </Border>
+                                    </StackPanel>
+                                </CheckBox>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <!-- Bottom Actions -->
+                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
+                        <Button Content="Cancel" Command="{Binding CancelCommand}"
+                                Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
+                        <Button Content="{Binding InstallButtonText}" Command="{Binding StartInstallCommand}"
+                                Width="110" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Background="{StaticResource AccentBrush}" Foreground="#0f172a" BorderThickness="0" CornerRadius="6" FontWeight="Bold" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- STEP 2: INSTALLING PROGRESS -->
+                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Installing}}">
+                    <StackPanel Grid.Row="0" Spacing="18" VerticalAlignment="Center">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="Installing PlumbobForge..." FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{StaticResource TextMuted}" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
+
+                        <ProgressBar Height="10" Minimum="0" Maximum="100" Value="{Binding ProgressPercentage}"
+                                     Foreground="{StaticResource AccentBrush}" Background="#1e293b" CornerRadius="5"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- STEP 3: COMPLETED -->
+                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Completed}}">
+                    <StackPanel Grid.Row="0" Spacing="14" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="#2010b981" CornerRadius="36" Width="72" Height="72" HorizontalAlignment="Center">
+                            <icon:PackIconBoxIcons Kind="RegularCheckCircle" Width="42" Height="42" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Installation Completed!" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="PlumbobForge is ready to run on your system." FontSize="12" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- Completed Action Buttons -->
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+                        <Button Content="Finish" Command="{Binding FinishCommand}"
+                                Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
+                        <Button Content="Launch PlumbobForge" Command="{Binding LaunchAppCommand}"
+                                Height="34" Padding="16,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Background="{StaticResource AccentBrush}" Foreground="#0f172a" BorderThickness="0" CornerRadius="6" FontWeight="Bold" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+
+                <!-- STEP 4: FAILED -->
+                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Failed}}">
+                    <StackPanel Grid.Row="0" Spacing="14" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Border Background="#20ef4444" CornerRadius="36" Width="72" Height="72" HorizontalAlignment="Center">
+                            <icon:PackIconBoxIcons Kind="RegularX" Width="42" Height="42" Foreground="#ef4444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="Installation Failed" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Right">
+                        <Button Content="Close" Command="{Binding CancelCommand}"
+                                Width="100" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
+                    </StackPanel>
+                </Grid>
+
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
