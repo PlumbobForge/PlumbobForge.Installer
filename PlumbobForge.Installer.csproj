@@ -8,8 +8,14 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationIcon>Assets\appicon.ico</ApplicationIcon>
     <AssemblyName>PlumbobForge-Setup</AssemblyName>
+    <AssemblyTitle>PlumbobForge Installer</AssemblyTitle>
+    <Description>PlumbobForge Installer</Description>
+    <Product>PlumbobForge</Product>
     <Company>bringscookies</Company>
     <Authors>bringscookies</Authors>
+    <Version>1.0.3</Version>
+    <FileVersion>1.0.3.0</FileVersion>
+    <InformationalVersion>1.0.3</InformationalVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 
     <ServerGarbageCollection>false</ServerGarbageCollection>
@@ -22,8 +28,6 @@
     <TrimMode>partial</TrimMode>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishSingleFile>true</PublishSingleFile>
-    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -34,17 +38,19 @@
 
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Win32" Version="11.2.5" />
+    <PackageReference Include="Avalonia.Skia" Version="11.2.5" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.5" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.5" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="IconPacks.Avalonia.BoxIcons" Version="2.0.0" />
-    <PackageReference Include="Tmds.DBus.Protocol" Version="0.21.3" />
   </ItemGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-    <EmbeddedResource Include="Resources\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\payload.zip" />
   </ItemGroup>
 
   <ItemGroup>
