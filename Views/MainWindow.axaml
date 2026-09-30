@@ -1,179 +1,202 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:PlumbobForge.Installer.ViewModels"
-        xmlns:icon="using:IconPacks.Avalonia.BoxIcons"
         x:Class="PlumbobForge.Installer.Views.MainWindow"
         x:DataType="vm:InstallerViewModel"
         Title="PlumbobForge Setup"
-        Icon="/Assets/appicon.ico"
-        Width="600" Height="440"
-        CanResize="False"
+        Width="540" Height="420"
         WindowStartupLocation="CenterScreen"
+        CanResize="False"
         SystemDecorations="None"
-        Background="{StaticResource BgDark}">
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
+        Icon="/Assets/appicon.ico">
 
-    <Window.Styles>
-        <Style Selector="Button.win-btn">
-            <Setter Property="Width" Value="44"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="CornerRadius" Value="0"/>
-            <Setter Property="Cursor" Value="Hand"/>
-        </Style>
-        <Style Selector="Button.win-btn:pointerover">
-            <Setter Property="Background" Value="#334155"/>
-        </Style>
-        <Style Selector="Button.win-btn:pointerover icon|PackIconBoxIcons">
-            <Setter Property="Foreground" Value="#ffffff"/>
-        </Style>
-        <Style Selector="Button.win-btn-close:pointerover">
-            <Setter Property="Background" Value="#ef4444"/>
-        </Style>
-        <Style Selector="Button.win-btn-close:pointerover icon|PackIconBoxIcons">
-            <Setter Property="Foreground" Value="#ffffff"/>
-        </Style>
-    </Window.Styles>
+    <!-- Clean Modern Window Frame (0 CornerRadius for Window Border) -->
+    <Border Background="{StaticResource BgDark}"
+            BorderBrush="{StaticResource BorderMain}"
+            BorderThickness="1"
+            CornerRadius="0">
 
-    <Border BorderBrush="#334155" BorderThickness="1" CornerRadius="8" ClipToBounds="True">
         <Grid RowDefinitions="Auto,*">
-            <!-- Frameless Titlebar -->
-            <Border Grid.Row="0" Height="40" Background="#182234" PointerPressed="OnHeaderPointerPressed">
+
+            <!-- Title Bar (Flat Header, Clean Borderless App Icon) -->
+            <Border Grid.Row="0" Background="{StaticResource BgHeader}" Height="38"
+                    BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,0,0,1"
+                    PointerPressed="OnHeaderPointerPressed">
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="8">
-                        <Image Source="/Assets/appicon.png" Width="20" Height="20" RenderOptions.BitmapInterpolationMode="HighQuality"/>
-                        <TextBlock Text="PlumbobForge Setup" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextMain}" VerticalAlignment="Center"/>
+                    <!-- App Icon & Title (Original Brand Icon, No Background) -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0" Spacing="9">
+                        <Image Source="/Assets/appicon.png" Width="18" Height="18" VerticalAlignment="Center"/>
+                        <TextBlock Text="PlumbobForge Setup" FontSize="12" FontWeight="SemiBold"
+                                   Foreground="{StaticResource TextMain}" VerticalAlignment="Center"/>
                     </StackPanel>
 
+                    <!-- Native-style Window Control Buttons -->
                     <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Stretch">
                         <Button Classes="win-btn" Click="OnMinimizeClick" ToolTip.Tip="Minimize">
-                            <icon:PackIconBoxIcons Kind="RegularMinus" Width="14" Height="14" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <PathIcon Data="{StaticResource IconMinus}" Width="10" Height="10" Foreground="{StaticResource TextMuted}"/>
                         </Button>
                         <Button Classes="win-btn win-btn-close" Click="OnCloseClick" ToolTip.Tip="Close">
-                            <icon:PackIconBoxIcons Kind="RegularX" Width="14" Height="14" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <PathIcon Data="{StaticResource IconClose}" Width="10" Height="10" Foreground="{StaticResource TextMuted}"/>
                         </Button>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Wizard Step Content -->
-            <Grid Grid.Row="1" Margin="28,20,28,24">
+            <!-- Main Content Area -->
+            <Grid Grid.Row="1">
 
-                <!-- STEP 1: WELCOME & OPTIONS -->
-                <Grid RowDefinitions="Auto,*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Welcome}}">
-                    <!-- Header Banner -->
-                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
-                        <StackPanel Orientation="Horizontal" Spacing="12">
-                            <Border Background="#2010b981" CornerRadius="8" Width="44" Height="44">
-                                <icon:PackIconBoxIcons Kind="RegularPackage" Width="24" Height="24" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                            </Border>
-                            <StackPanel VerticalAlignment="Center" Spacing="2">
-                                <TextBlock Text="{Binding TitleText}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
-                                <TextBlock Text="High-performance Sims 3 CC manager and cache builder." FontSize="12" Foreground="{StaticResource TextMuted}"/>
+                <!-- STEP 1: OPTIONS / DIRECTORY SELECTION -->
+                <Grid IsVisible="{Binding IsWelcomeStep}" RowDefinitions="Auto,*,Auto" Margin="32,24,32,24">
+                    <!-- Hero Section -->
+                    <StackPanel Grid.Row="0" Margin="0,0,0,24">
+                        <StackPanel Orientation="Horizontal" Spacing="16">
+                            <PathIcon Data="{StaticResource IconAppLogo}" Width="48" Height="40"
+                                      Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding TitleText}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
+                                <TextBlock Text="Sims 3 CC Manager &amp; Merger" FontSize="12" Foreground="{StaticResource TextMuted}" Margin="0,3,0,0"/>
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Destination & Options Form -->
-                    <StackPanel Grid.Row="1" Spacing="14" VerticalAlignment="Center">
-                        <!-- Install Location Field -->
+                    <!-- Configuration Panels -->
+                    <StackPanel Grid.Row="1" Spacing="16">
+                        <!-- Path Selection (Rounded Box & Button) -->
                         <StackPanel Spacing="6">
-                            <TextBlock Text="Install Location" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextMain}"/>
-                            <Grid ColumnDefinitions="*,Auto">
-                                <TextBox Grid.Column="0" Text="{Binding InstallDirectory}" Height="34" CornerRadius="6"
-                                         Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1"
-                                         Foreground="{StaticResource TextMain}" FontSize="12" VerticalContentAlignment="Center" Padding="10,0"/>
-                                <Button Grid.Column="1" Content="Browse..." Command="{Binding BrowseFolderCommand}" Margin="8,0,0,0"
-                                        Height="34" Padding="14,0" Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1"
-                                        Foreground="{StaticResource TextMain}" CornerRadius="6" FontSize="12" Cursor="Hand" VerticalContentAlignment="Center"/>
-                            </Grid>
+                            <TextBlock Text="Installation Directory" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}"/>
+                            <Border Classes="input-box">
+                                <Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+                                    <TextBox Grid.Column="0" Classes="seamless" Text="{Binding InstallDirectory}"/>
+                                    <Button Grid.Column="1" Classes="secondary" Content="Browse" Height="30" Padding="14,0" FontSize="11"
+                                            CornerRadius="6" VerticalAlignment="Center" Margin="6,0,0,0" Command="{Binding BrowseFolderCommand}"/>
+                                </Grid>
+                            </Border>
                         </StackPanel>
 
-                        <!-- Checkbox Options -->
-                        <Border Background="{StaticResource BgCard}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Padding="14,10">
-                            <StackPanel Spacing="8">
-                                <CheckBox IsChecked="{Binding CreateDesktopShortcut}">
-                                    <TextBlock Text="Create Desktop Shortcut" FontSize="12" Foreground="{StaticResource TextMain}"/>
-                                </CheckBox>
-                                <CheckBox IsChecked="{Binding CreateStartMenuShortcut}">
-                                    <TextBlock Text="Create Start Menu Shortcut" FontSize="12" Foreground="{StaticResource TextMain}"/>
-                                </CheckBox>
-                                <CheckBox IsChecked="{Binding CleanupLegacyElectron}" IsVisible="{Binding HasLegacyElectron}">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="Remove leftover files from previous Electron version (saves ~250 MB)" FontSize="12" Foreground="{StaticResource TextMain}"/>
-                                        <Border Background="#3010b981" CornerRadius="4" Padding="6,1">
-                                            <TextBlock Text="Detected" FontSize="10" FontWeight="Bold" Foreground="{StaticResource AccentBrush}"/>
-                                        </Border>
-                                    </StackPanel>
-                                </CheckBox>
-                            </StackPanel>
-                        </Border>
+                        <!-- Options Chips (Rounded) -->
+                        <StackPanel Spacing="8">
+                            <TextBlock Text="Options" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource TextMuted}"/>
+                            <WrapPanel Orientation="Horizontal">
+                                <CheckBox Classes="chip" IsChecked="{Binding CreateDesktopShortcut}" Content="Desktop Shortcut" Margin="0,0,8,6"/>
+                                <CheckBox Classes="chip" IsChecked="{Binding CreateStartMenuShortcut}" Content="Start Menu Shortcut" Margin="0,0,8,6"/>
+                                <CheckBox Classes="chip" IsChecked="{Binding CleanupLegacyElectron}" IsVisible="{Binding HasLegacyElectron}" Content="Clean Legacy Electron Data" Margin="0,0,8,6"/>
+                            </WrapPanel>
+                        </StackPanel>
                     </StackPanel>
 
-                    <!-- Bottom Actions -->
-                    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10" Margin="0,10,0,0">
-                        <Button Content="Cancel" Command="{Binding CancelCommand}"
-                                Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
-                        <Button Content="{Binding InstallButtonText}" Command="{Binding StartInstallCommand}"
-                                Width="110" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Background="{StaticResource AccentBrush}" Foreground="#0f172a" BorderThickness="0" CornerRadius="6" FontWeight="Bold" Cursor="Hand"/>
-                    </StackPanel>
+                    <!-- Footer Actions (Rounded Action Buttons) -->
+                    <Border Grid.Row="2" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,1,0,0" Padding="0,14,0,0" Margin="0,6,0,0">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Button Grid.Column="0" Classes="secondary" Content="Cancel" Command="{Binding CancelCommand}"/>
+                            <Button Grid.Column="2" Classes="primary" Content="{Binding InstallButtonText}" Command="{Binding StartInstallCommand}"/>
+                        </Grid>
+                    </Border>
                 </Grid>
 
                 <!-- STEP 2: INSTALLING PROGRESS -->
-                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Installing}}">
-                    <StackPanel Grid.Row="0" Spacing="18" VerticalAlignment="Center">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="Installing PlumbobForge..." FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
-                            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{StaticResource TextMuted}" TextTrimming="CharacterEllipsis"/>
+                <Grid IsVisible="{Binding IsInstallingStep}" RowDefinitions="*,Auto" Margin="32,32,32,28">
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="440" Spacing="20">
+                        <PathIcon Data="{StaticResource IconAppLogo}" Width="52" Height="44"
+                                  Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center"/>
+
+                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                            <TextBlock Text="Installing PlumbobForge..." FontSize="18" FontWeight="Bold"
+                                       Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Extracting application files..." FontSize="12"
+                                       Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
                         </StackPanel>
 
-                        <ProgressBar Height="10" Minimum="0" Maximum="100" Value="{Binding ProgressPercentage}"
-                                     Foreground="{StaticResource AccentBrush}" Background="#1e293b" CornerRadius="5"/>
+                        <!-- Progress Bar & Status Text -->
+                        <StackPanel Spacing="8">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" FontSize="11"
+                                           Foreground="{StaticResource TextSubtle}" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Grid.Column="1" Text="{Binding ProgressPercentText}" FontSize="12"
+                                           FontWeight="SemiBold" Foreground="{StaticResource AccentBrush}"/>
+                            </Grid>
+                            <ProgressBar Value="{Binding ProgressPercentage}" Minimum="0" Maximum="100"
+                                         Height="6" CornerRadius="4" Background="{StaticResource BgCardAlt}"
+                                         Foreground="{StaticResource AccentBrush}"/>
+                        </StackPanel>
+
+                        <!-- Cancel Installation Button -->
+                        <Button Classes="secondary" Content="Cancel Installation" HorizontalAlignment="Center"
+                                Height="32" Padding="14,0" FontSize="11" CornerRadius="6"
+                                Command="{Binding RequestCancelCommand}" Margin="0,10,0,0"/>
                     </StackPanel>
                 </Grid>
 
-                <!-- STEP 3: COMPLETED -->
-                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Completed}}">
-                    <StackPanel Grid.Row="0" Spacing="14" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Border Background="#2010b981" CornerRadius="36" Width="72" Height="72" HorizontalAlignment="Center">
-                            <icon:PackIconBoxIcons Kind="RegularCheckCircle" Width="42" Height="42" Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- STEP 3: FINISHED -->
+                <Grid IsVisible="{Binding IsCompletedStep}" RowDefinitions="*,Auto" Margin="32,32,32,24">
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="420" Spacing="16">
+                        <Border Width="64" Height="64" CornerRadius="32" Background="#09281c"
+                                BorderBrush="{StaticResource AccentBrush}" BorderThickness="1.5"
+                                HorizontalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconCheck}" Width="28" Height="28"
+                                      Foreground="{StaticResource AccentBrush}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Installation Completed!" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="PlumbobForge is ready to run on your system." FontSize="12" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+
+                        <StackPanel Spacing="4" HorizontalAlignment="Center">
+                            <TextBlock Text="Ready to Use!" FontSize="20" FontWeight="Bold"
+                                       Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12"
+                                       Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+                        </StackPanel>
                     </StackPanel>
 
-                    <!-- Completed Action Buttons -->
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
-                        <Button Content="Finish" Command="{Binding FinishCommand}"
-                                Width="90" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
-                        <Button Content="Launch PlumbobForge" Command="{Binding LaunchAppCommand}"
-                                Height="34" Padding="16,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Background="{StaticResource AccentBrush}" Foreground="#0f172a" BorderThickness="0" CornerRadius="6" FontWeight="Bold" Cursor="Hand"/>
-                    </StackPanel>
+                    <!-- Footer Actions -->
+                    <Border Grid.Row="1" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,1,0,0" Padding="0,14,0,0">
+                        <Grid ColumnDefinitions="*,Auto,Auto">
+                            <Button Grid.Column="1" Classes="secondary" Content="Close" Command="{Binding FinishCommand}" Margin="0,0,10,0"/>
+                            <Button Grid.Column="2" Classes="primary" Content="Launch PlumbobForge" Command="{Binding LaunchAppCommand}"/>
+                        </Grid>
+                    </Border>
                 </Grid>
 
-                <!-- STEP 4: FAILED -->
-                <Grid RowDefinitions="*,Auto" IsVisible="{Binding CurrentStep, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static vm:InstallStep.Failed}}">
-                    <StackPanel Grid.Row="0" Spacing="14" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Border Background="#20ef4444" CornerRadius="36" Width="72" Height="72" HorizontalAlignment="Center">
-                            <icon:PackIconBoxIcons Kind="RegularX" Width="42" Height="42" Foreground="#ef4444" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <!-- STEP 4: ERROR / CANCELLED -->
+                <Grid IsVisible="{Binding IsFailedStep}" RowDefinitions="*,Auto" Margin="32,32,32,24">
+                    <StackPanel Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Width="440" Spacing="16">
+                        <Border Width="64" Height="64" CornerRadius="32" Background="{StaticResource StatusRedBg}"
+                                BorderBrush="{StaticResource StatusRed}" BorderThickness="1.5"
+                                HorizontalAlignment="Center">
+                            <PathIcon Data="{StaticResource IconClose}" Width="28" Height="28"
+                                      Foreground="{StaticResource StatusRed}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Installation Failed" FontSize="20" FontWeight="Bold" Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
-                        <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{StaticResource TextMuted}" HorizontalAlignment="Center"/>
+
+                        <StackPanel Spacing="6" HorizontalAlignment="Center">
+                            <TextBlock Text="Installation Failed" FontSize="18" FontWeight="Bold"
+                                       Foreground="{StaticResource TextMain}" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding StatusMessage}" FontSize="12" Foreground="{StaticResource TextMuted}"
+                                       TextWrapping="Wrap" TextAlignment="Center" MaxWidth="400"/>
+                        </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" HorizontalAlignment="Right">
-                        <Button Content="Close" Command="{Binding CancelCommand}"
-                                Width="100" Height="34" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                Background="#1e293b" Foreground="{StaticResource TextMain}" BorderBrush="#334155" BorderThickness="1" CornerRadius="6" Cursor="Hand"/>
-                    </StackPanel>
+                    <!-- Footer Actions -->
+                    <Border Grid.Row="1" BorderBrush="{StaticResource BorderSubtle}" BorderThickness="0,1,0,0" Padding="0,14,0,0">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Button Grid.Column="1" Classes="secondary" Content="Close" Command="{Binding CancelCommand}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- CONFIRM CANCEL POPUP MODAL OVERLAY -->
+                <Grid IsVisible="{Binding ShowCancelConfirmation}" Background="#80000000">
+                    <Border Background="{StaticResource BgCard}" BorderBrush="{StaticResource BorderMain}" BorderThickness="1"
+                            CornerRadius="8" Width="380" Padding="24" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <StackPanel Spacing="16">
+                            <TextBlock Text="Cancel Installation?" FontSize="16" FontWeight="Bold" Foreground="{StaticResource TextMain}"/>
+                            <TextBlock Text="Are you sure you want to cancel the installation? All files copied so far will be removed and no changes will be made to your system."
+                                       FontSize="12" Foreground="{StaticResource TextMuted}" TextWrapping="Wrap" LineHeight="18"/>
+                            <Grid ColumnDefinitions="*,Auto,Auto" Margin="0,8,0,0">
+                                <Button Grid.Column="1" Classes="secondary" Content="Continue Installing"
+                                        Command="{Binding DismissCancelConfirmationCommand}" Margin="0,0,10,0"/>
+                                <Button Grid.Column="2" Classes="danger" Content="Cancel &amp; Revert"
+                                        Command="{Binding ConfirmCancelInstallationCommand}"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
                 </Grid>
 
             </Grid>

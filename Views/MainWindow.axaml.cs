@@ -60,10 +60,28 @@ public partial class MainWindow : Window
 
     private void OnCloseClick(object? sender, RoutedEventArgs e)
     {
-        if (DataContext is InstallerViewModel vm && vm.IsBusy)
+        if (DataContext is InstallerViewModel vm)
         {
-            return;
+            if (vm.CurrentStep == InstallStep.Installing)
+            {
+                if (!vm.IsCancelling)
+                {
+                    vm.RequestCloseOrCancel();
+                }
+                return;
+            }
         }
         Close();
+    }
+
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (DataContext is InstallerViewModel vm && vm.CurrentStep == InstallStep.Installing && !vm.IsCancelling)
+        {
+            e.Cancel = true;
+            vm.RequestCloseOrCancel();
+            return;
+        }
+        base.OnClosing(e);
     }
 }

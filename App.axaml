@@ -1,39 +1,244 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:icon="using:IconPacks.Avalonia.BoxIcons"
              x:Class="PlumbobForge.Installer.App"
              RequestedThemeVariant="Dark">
 
-    <Application.Styles>
-        <FluentTheme />
-        <StyleInclude Source="avares://IconPacks.Avalonia.BoxIcons/BoxIcons.axaml" />
-
-        <!-- Custom Green CheckBox Styling -->
-        <Style Selector="CheckBox:checked /template/ Border#NormalRectangle">
-            <Setter Property="Background" Value="#10b981"/>
-            <Setter Property="BorderBrush" Value="#10b981"/>
-        </Style>
-        <Style Selector="CheckBox:checked:pointerover /template/ Border#NormalRectangle">
-            <Setter Property="Background" Value="#059669"/>
-            <Setter Property="BorderBrush" Value="#059669"/>
-        </Style>
-        <Style Selector="CheckBox:checked:pressed /template/ Border#NormalRectangle">
-            <Setter Property="Background" Value="#047857"/>
-            <Setter Property="BorderBrush" Value="#047857"/>
-        </Style>
-        <Style Selector="CheckBox:checked /template/ Path#CheckGlyph">
-            <Setter Property="Fill" Value="#ffffff"/>
-            <Setter Property="Stroke" Value="#ffffff"/>
-        </Style>
-    </Application.Styles>
-
     <Application.Resources>
-        <Color x:Key="AccentColor">#10b981</Color>
+        <Color x:Key="AccentColor">#00c77f</Color>
         <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
-        <SolidColorBrush x:Key="BgDark" Color="#0f172a" />
-        <SolidColorBrush x:Key="BgCard" Color="#1e293b" />
-        <SolidColorBrush x:Key="BgSidebar" Color="#182234" />
+        <SolidColorBrush x:Key="BgDark" Color="#090e17" />
+        <SolidColorBrush x:Key="BgHeader" Color="#0c1322" />
+        <SolidColorBrush x:Key="BgCard" Color="#101928" />
+        <SolidColorBrush x:Key="BgCardAlt" Color="#172438" />
+        <SolidColorBrush x:Key="BgInput" Color="#080d17" />
+        <SolidColorBrush x:Key="BorderMain" Color="#1e2d42" />
+        <SolidColorBrush x:Key="BorderSubtle" Color="#162233" />
         <SolidColorBrush x:Key="TextMain" Color="#f8fafc" />
         <SolidColorBrush x:Key="TextMuted" Color="#94a3b8" />
+        <SolidColorBrush x:Key="TextSubtle" Color="#64748b" />
+        <SolidColorBrush x:Key="StatusRed" Color="#ef4444" />
+        <SolidColorBrush x:Key="StatusRedBg" Color="#331518" />
+
+        <StreamGeometry x:Key="IconMinus">M19,13H5V11H19V13Z</StreamGeometry>
+        <StreamGeometry x:Key="IconClose">M19,6.41L17.59,5 12,10.59 6.41,5 5,6.41 10.59,12 5,17.59 6.41,19 12,13.41 17.59,19 19,17.59 13.41,12z</StreamGeometry>
+        <StreamGeometry x:Key="IconCheck">M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z</StreamGeometry>
+        <StreamGeometry x:Key="IconFolder">M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z</StreamGeometry>
+        <StreamGeometry x:Key="IconPlumbob">M12 2L5 12l7 10 7-10z</StreamGeometry>
+
+        <StreamGeometry x:Key="IconAppLogo">M131.34 120.814q-.393-.075-.804-.153c-43.744-8.377-43.73-8.45-76.072-25.872C2.745 66.928.201 37.362.201 37.362c-.752-4.794.63-9.676 3.784-13.364 3.154-3.687 7.763-5.81 12.615-5.81h113.897l-.001-1.358c-.004-4.403 1.741-8.628 4.853-11.744C138.46 1.97 142.682.218 147.085.215L465.508 0c8.714-.006 15.949 6.726 16.569 15.418 0 0 1.233 25.551-3.614 37.348-3.301 8.034-8.967 12.531-14.903 14.186-8.747 2.439-25.507 1.522-55.089 13.423-22.685 9.127-30.014 16.644-40.485 25.416-16.525 13.843-20.139 30.393-22.165 45.523-.316 2.362.693 6.01 2.106 10.113 2.709 7.863 7.679 16.938 15.328 22.599 6.074 4.495 15.312 7.327 22.765 9.956 7.987 2.817 14.616 5.677 17.997 8.219l3.23 3.207 1.885 3.133c.304.659 1.398 3.064 1.618 7.145.339 6.277.097 36.191.097 36.191-.08 9.093-7.46 16.428-16.553 16.454l-58.391.163c-3.11.009-6.159-.856-8.801-2.496 0 0-30.493-19.345-58.447-18.447-40.323 1.296-59.596 16.883-59.596 16.883-3.012 2.606-6.86 4.043-10.843 4.048l-61.605.074c-9.088.011-16.496-7.289-16.618-16.376 0 0-.38-28.994-.19-34.961.116-3.649.928-5.808 1.121-6.323l2.696-4.691 4.036-3.562c6.824-4.282 19.482-9.48 31.534-16.845 8.656-5.289 17.5-11.542 20.646-20.873.926-2.747 1.695-7.585 1.454-12.696-.18-3.824-.659-8.036-3.298-10.945-2.766-3.049-7.431-4.507-11.815-5.75-9.379-2.66-18.673-3.036-19.812-3.092-7.115-.353-13.001-5.15-15.024-11.626Zm-.828-86.026H16.6s3.558 22.665 45.737 45.386c25.34 13.651 58.155 21.378 68.239 23.546zM465.518 16.6l-318.423.215.092 99.045c2.255.112 31.387 1.36 43.098 14.268 10.445 11.514 8.021 31.964 5.279 40.098-8.713 25.842-45.513 37.958-59.087 46.476-.359.225.113 35.253.113 35.253l61.605-.074s22.412-19.395 69.926-20.922c32.336-1.039 67.735 20.935 67.735 20.935l58.391-.163s.316-35.869-.206-36.261c-6.3-4.736-28.536-9.125-40.663-18.1-17.34-12.834-25.386-37.997-24.012-48.259 2.506-18.716 7.517-38.922 27.958-56.045 11.611-9.727 19.794-17.971 44.949-28.091 30.536-12.285 47.797-11.495 56.826-14.013 8.697-2.425 6.417-34.362 6.417-34.362Z M265.631 37.316 303.494 118.498 265.631 199.68 227.768 118.498Z</StreamGeometry>
     </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+
+        <Style Selector="Button.win-btn">
+            <Setter Property="Width" Value="38"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="Button.win-btn:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#172438"/>
+        </Style>
+        <Style Selector="Button.win-btn:pointerover PathIcon">
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+        <Style Selector="Button.win-btn-close:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#ef4444"/>
+        </Style>
+        <Style Selector="Button.win-btn-close:pointerover PathIcon">
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#00c77f"/>
+            <Setter Property="Foreground" Value="#062316"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="24,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#05df8f"/>
+            <Setter Property="Foreground" Value="#062316"/>
+        </Style>
+        <Style Selector="Button.primary:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#049e65"/>
+            <Setter Property="Foreground" Value="#062316"/>
+        </Style>
+
+        <!-- Secondary Button (Rounded) -->
+        <Style Selector="Button.secondary">
+            <Setter Property="Background" Value="#131f33"/>
+            <Setter Property="Foreground" Value="#94a3b8"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#1e2d42"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.secondary:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#1a2b45"/>
+            <Setter Property="Foreground" Value="#f8fafc"/>
+            <Setter Property="BorderBrush" Value="#2a3f5c"/>
+        </Style>
+        <Style Selector="Button.secondary:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#101928"/>
+            <Setter Property="Foreground" Value="#f8fafc"/>
+        </Style>
+
+        <!-- Destructive / Danger Button (Rounded) -->
+        <Style Selector="Button.danger">
+            <Setter Property="Background" Value="#ef4444"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style Selector="Button.danger:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="#dc2626"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+        <Style Selector="Button.danger:pressed /template/ ContentPresenter">
+            <Setter Property="Background" Value="#b91c1c"/>
+            <Setter Property="Foreground" Value="#ffffff"/>
+        </Style>
+
+        <!-- Input Box Container -->
+        <Style Selector="Border.input-box">
+            <Setter Property="Background" Value="{StaticResource BgInput}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderMain}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Padding" Value="12,0,5,0"/>
+        </Style>
+        <Style Selector="Border.input-box:focus-within">
+            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+        </Style>
+
+        <Style Selector="TextBox.seamless">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="MinHeight" Value="0"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Foreground" Value="{StaticResource TextMain}"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="CaretBrush" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="SelectionBrush" Value="#2563eb"/>
+        </Style>
+        <Style Selector="TextBox.seamless /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.seamless:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.seamless:pointerover /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+        </Style>
+        <Style Selector="TextBox.seamless:focus">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style Selector="TextBox.seamless:pointerover">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
+        <Style Selector="CheckBox.chip">
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Foreground" Value="#94a3b8"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Name="PART_ChipRoot"
+                            Background="#101928"
+                            BorderBrush="#1e2d42"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="12,7">
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Border Name="PART_CheckDot"
+                                    Width="16" Height="16"
+                                    CornerRadius="4"
+                                    Background="#172438"
+                                    BorderBrush="#22334a"
+                                    BorderThickness="1">
+                                <PathIcon Name="PART_CheckIcon"
+                                          Data="{StaticResource IconCheck}"
+                                          Width="10" Height="10"
+                                          Foreground="Transparent"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"/>
+                            </Border>
+                            <ContentPresenter Name="PART_ContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              FontWeight="{TemplateBinding FontWeight}"
+                                              VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+
+        <Style Selector="CheckBox.chip:pointerover /template/ Border#PART_ChipRoot">
+            <Setter Property="Background" Value="#162236"/>
+            <Setter Property="BorderBrush" Value="#2a3f5c"/>
+        </Style>
+        <Style Selector="CheckBox.chip:pointerover">
+            <Setter Property="Foreground" Value="#f8fafc"/>
+        </Style>
+
+        <Style Selector="CheckBox.chip:checked /template/ Border#PART_ChipRoot">
+            <Setter Property="Background" Value="#09281c"/>
+            <Setter Property="BorderBrush" Value="#00c77f"/>
+        </Style>
+        <Style Selector="CheckBox.chip:checked /template/ Border#PART_CheckDot">
+            <Setter Property="Background" Value="#00c77f"/>
+            <Setter Property="BorderBrush" Value="#00c77f"/>
+        </Style>
+        <Style Selector="CheckBox.chip:checked /template/ PathIcon#PART_CheckIcon">
+            <Setter Property="Foreground" Value="#062316"/>
+        </Style>
+        <Style Selector="CheckBox.chip:checked">
+            <Setter Property="Foreground" Value="#6ee7b7"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Application.Styles>
 </Application>
