@@ -25,15 +25,9 @@ public static class InstallerService
         IProgress<(double Progress, string Status)>? progress = null,
         CancellationToken cancellationToken = default)
     {
-        var targetDir = PathSafety.SanitizeInstallDirectory(options.InstallDirectory);
-        if (PathSafety.IsForbiddenDirectory(targetDir))
-        {
-            progress?.Report((100, $"Cannot install directly into protected system directory '{targetDir}'."));
-            return InstallResult.Failed;
-        }
-
-        bool targetDirExistedBefore = Directory.Exists(targetDir);
+        var targetDir = Path.GetFullPath(options.InstallDirectory);
         var createdFiles = new List<string>();
+        bool targetDirExistedBefore = Directory.Exists(targetDir);
 
         try
         {
@@ -49,7 +43,7 @@ public static class InstallerService
                 Directory.CreateDirectory(targetDir);
             }
 
-            // Step 3: Fast sequential payload extraction
+            // Step 3: Fast sequential payload extraction or copy
             cancellationToken.ThrowIfCancellationRequested();
             progress?.Report((10, "Extracting application files..."));
             await ExtractPayloadAsync(targetDir, createdFiles, progress, 10, 85, cancellationToken);
@@ -123,7 +117,7 @@ public static class InstallerService
     {
         try
         {
-            // 1. Delete all extracted files
+            // 1. Delete all extracted/copied files
             foreach (var file in createdFiles)
             {
                 try
@@ -206,6 +200,79 @@ public static class InstallerService
         double endPercentage,
         CancellationToken cancellationToken)
     {
+        var installedFiles = new List<string>();
+        var normalizedTarget = Path.GetFullPath(targetDir);
+
+        // Check 1: Shared Bootstrapper mode (current directory has payload files from setup extraction)
+        var currentDir = Path.GetFullPath(AppContext.BaseDirectory);
+        bool isSharedBootstrapper = File.Exists(Path.Combine(currentDir, InstallerConstants.ExecutableName)) &&
+                                    File.Exists(Path.Combine(currentDir, "Uninstall.exe")) &&
+                                    !string.Equals(currentDir.TrimEnd('\\', '/'), normalizedTarget.TrimEnd('\\', '/'), StringComparison.OrdinalIgnoreCase);
+
+        if (isSharedBootstrapper)
+        {
+            await Task.Run(() =>
+            {
+                var allFiles = Directory.GetFiles(currentDir, "*", SearchOption.AllDirectories);
+                var total = allFiles.Length;
+                if (total == 0) return;
+
+                var stopwatch = Stopwatch.StartNew();
+
+                for (int i = 0; i < total; i++)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var sourceFile = allFiles[i];
+                    var relativePath = Path.GetRelativePath(currentDir, sourceFile);
+
+                    // Don't copy installer-only binaries to target app folder
+                    if (string.Equals(relativePath, "PlumbobForge-Setup.exe", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(relativePath, "PlumbobForge-Setup.dll", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(relativePath, "PlumbobForge-Setup.deps.json", StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(relativePath, "PlumbobForge-Setup.runtimeconfig.json", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var destinationPath = Path.GetFullPath(Path.Combine(targetDir, relativePath));
+
+                    // Guard against slip
+                    if (!destinationPath.StartsWith(normalizedTarget, StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var destDir = Path.GetDirectoryName(destinationPath);
+                    if (!string.IsNullOrEmpty(destDir) && !Directory.Exists(destDir))
+                    {
+                        Directory.CreateDirectory(destDir);
+                    }
+
+                    File.Copy(sourceFile, destinationPath, overwrite: true);
+                    createdFiles.Add(destinationPath);
+                    installedFiles.Add(relativePath.Replace('\\', '/'));
+
+                    if (stopwatch.ElapsedMilliseconds > 40 || i == total - 1)
+                    {
+                        stopwatch.Restart();
+                        double currentPct = startPercentage + ((double)(i + 1) / total) * (endPercentage - startPercentage);
+                        progress?.Report((currentPct, $"Copying {Path.GetFileName(sourceFile)}..."));
+                    }
+                }
+            }, cancellationToken);
+
+            if (!installedFiles.Contains(InstallerConstants.InstallManifestFileName, StringComparer.OrdinalIgnoreCase))
+            {
+                installedFiles.Add(InstallerConstants.InstallManifestFileName);
+            }
+
+            await InstallManifest.SaveAsync(targetDir, installedFiles);
+            createdFiles.Add(Path.Combine(targetDir, InstallerConstants.InstallManifestFileName));
+            return;
+        }
+
+        // Check 2: Embedded payload.zip or external payload.zip/payload.7z archive
         var assembly = Assembly.GetExecutingAssembly();
         var resourceNames = assembly.GetManifestResourceNames();
 
@@ -247,9 +314,6 @@ public static class InstallerService
             await InstallManifest.SaveAsync(targetDir, [InstallerConstants.ExecutableName, InstallerConstants.InstallManifestFileName]);
             return;
         }
-
-        var installedFiles = new List<string>();
-        var normalizedTarget = Path.GetFullPath(targetDir);
 
         await Task.Run(() =>
         {
